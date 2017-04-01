@@ -1,44 +1,62 @@
 <template>
   <div class="orders-container">
-    <div class="create-order-container container bg-info">
-      <div class="row">
-        <div class="col-sm-12"> 
-          <h1>Orders</h1>
-        </div>
-      </div>
-      <div class="row bg-info create-order-group">
-        <div class="col-sm-8 vcenter" >
+    <div class="create-order-container container">
+      <div class="row bg-accent create-order-group">
+        <div class="col-sm-8">
           <div class="form-group">
-            <input type="text" class="form-control" id="orderName" placeholder="Order Name" v-model="name">
+            <input type="text" class="form-control" id="orderName" placeholder="Order Name" v-model="name" v-focus>
           </div>
-        </div><div class="col-sm-4 vcenter">
+        </div>
+        <div class="col-sm-4">
          <div class="form-group">
-            <button class="btn btn-info" @click="createEditOrderClickHandler">{{createEditText}}</button>
-            <button v-if="editMode" class="btn btn-warning" @click="cancelEditOrderClickHandler">Cancel</button>
+            <div>
+              <button class="btn btn-info full-width" @click="createEditOrderClickHandler">{{createEditText}}</button>
+            </div>
+            <div v-if="editMode" class="mt-2">
+              <button class="btn btn-warning full-width" @click="cancelEditOrderClickHandler">Cancel</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <div class="order-table-container container bg-info">
-      <div class="row">
-        <div class="col-sm-4"></div>
-        <div class="col-sm-4">Name</div>
-        <div class="col-sm-4">Id</div>
-      </div>
-      <div class="row" v-for="order in orders">
+      <div class="mod-row row hidden-xs bg-accent">
         <div class="col-sm-4">
-          <button class="btn btn-primary" @click="editOrderClickHandler(order.orderId)">Edit</button>
+          <h4>Name</h4>
+        </div>
+        <div class="col-sm-4">
+          <h4>Id</h4>
+        </div>
+        <div class="col-sm-4">
+          <h4>Actions</h4>
+        </div>
+      </div>
+      <div class="order-row mod-row row" :class="{ 'bg-row-accent': index % 2 !== 0 }" v-for="(order, index) in orders">
+        <div class="col-sm-4 vcenter-sm">
+          <p class="bold-sm">{{order.orderName}}</p>
+        </div>
+        <div class="col-sm-4 vcenter-sm">
+          <p>{{order.orderId}}</p>
+        </div>
+        <div class="col-sm-4 vcenter-sm">
+          <button class="btn btn-info mr-2" @click="editOrderClickHandler(order.orderId)">Edit</button>
           <button class="btn btn-danger" @click="deleteOrderClickHandler(order.orderId)">Delete</button>
         </div>
-        <div class="col-sm-4">{{order.orderName}}</div>
-        <div class="col-sm-4">{{order.orderId}}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
 import {mapGetters, mapActions} from 'vuex'
+
+Vue.directive('focus', {
+    inserted: function (el) {
+        el.focus()
+    }
+})
+
 export default {
   name: 'orders',
   data () {
@@ -47,6 +65,18 @@ export default {
       createEditText:'Create Order',
       editMode: false,
       id:''
+    }
+  },
+  directives: {
+    focus: {
+      // When the bound element is inserted into the DOM...
+      inserted(el) {
+        // Focus the element
+        el.focus()
+      },
+      update(el) {
+        el.focus()
+      }
     }
   },
   created(){
@@ -101,14 +131,67 @@ export default {
 }
 </script>
 
-<style>
-.order-table-container{
-  padding-top: 20px;
-  padding-bottom: 20px;
+<style lang="stylus">
+
+// Helpers
+.full-width {
+ width: 100%;
 }
-.create-order-container{
+.half-width-sm {
+  @media (min-width: 768px) {
+    width: calc(50% - 8px);
+    margin-left: 2px;
+    margin-right: 2px;
+  }
+}
+.bg-accent {
+  background-color: #2c3e50;
+  color: #fff;
+}
+.bg-row-accent {
+  background-color: #8cd4f7;
+}
+.mt-2 {
+  margin-top: 8px;
+}
+.mb-2 {
+  margin-bottom: 8px;
+}
+.mr-2 {
+  margin-right: 8px;
+}
+.vcenter-sm {
+  @media (min-width: 768px) {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+  }
+}
+.bold-sm {
+  @media (max-width: 767px) {
+    font-weight: bold;
+  }
+}
+
+// Form
+.create-order-container {
   margin-bottom: 20px;
 }
+.create-order-group {
+ padding-top: 16px;
+}
 
-
+// Table
+.order-table-container{
+  
+  .mod-row [class*="col-"] {
+    text-align: left;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    
+    p {
+      margin: 0;
+    }
+  }
+}
 </style>
